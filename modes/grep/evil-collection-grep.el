@@ -30,7 +30,10 @@
 (require 'evil-collection)
 (require 'grep)
 
-(defconst evil-collection-grep-maps '(grep-mode-map))
+(defvar grep-edit-mode-map) ;; might be missing if it's older Emacs
+
+(defconst evil-collection-grep-maps '(grep-mode-map
+                                      grep-edit-mode-map))
 
 ;;;###autoload
 (defun evil-collection-grep-setup ()
@@ -43,7 +46,13 @@
   ;; `wgrep' integration
   (when (fboundp 'wgrep-setup)
     (evil-collection-define-key 'normal 'grep-mode-map
-      "i" 'wgrep-change-to-wgrep-mode)))
+      "i" 'wgrep-change-to-wgrep-mode))
+
+  (when (>= emacs-major-version 31)
+    (evil-collection-define-key 'normal 'grep-mode-map
+      "I" 'grep-change-to-grep-edit-mode)
+    (evil-collection-bind 'grep-edit-mode-map
+                          'quit-save 'grep-edit-save-changes)))
 
 (provide 'evil-collection-grep)
 ;;; evil-collection-grep.el ends here
